@@ -1,133 +1,84 @@
-import 'package:flick_flock/presentation/style/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flick_flock/presentation/pages/auth/widgets/auth_text_field.dart';
+import 'package:flick_flock/presentation/pages/home/home_page.dart';
+import 'package:flick_flock/presentation/pages/auth/widgets/auth_scaffold.dart';
+import 'package:flick_flock/presentation/widgets/gradient_button.dart';
+import 'package:flick_flock/presentation/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 
-class RegisterPage extends StatelessWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  String _login = '';
+  String _password = '';
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            height: double.infinity,
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.red, AppColors.purple],
-              ),
-            ),
-            child: const Padding(
-              padding: EdgeInsets.only(top: 56, left: 22),
-              child: Text(
-                'Create Your\nAccount',
-                style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          Container(
-            height: double.infinity,
-            width: double.infinity,
-            margin: const EdgeInsets.only(top: 160),
-            padding:  const EdgeInsets.fromLTRB(18, 24, 18, 0),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(40),
-                topRight: Radius.circular(40),
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const TextField(
-                  decoration: InputDecoration(
-                    suffixIcon: Icon(Icons.check, color: Colors.grey),
-                    label: Text(
-                      'Nickname',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.red,
-                      ),
-                    ),
-                  ),
-                ),
-                const TextField(
-                  decoration: InputDecoration(
-                    suffixIcon: Icon(
-                      Icons.check,
-                      color: Colors.grey,
-                    ),
-                    label: Text(
-                      'Gmail',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.red,
-                      ),
-                    ),
-                  ),
-                ),
-                const TextField(
-                  decoration: InputDecoration(
-                    suffixIcon: Icon(
-                      Icons.visibility_off,
-                      color: Colors.grey,
-                    ),
-                    label: Text(
-                      'Password',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.red,
-                      ),
-                    ),
-                  ),
-                ),
-                const TextField(
-                  decoration: InputDecoration(
-                    suffixIcon: Icon(
-                      Icons.visibility_off,
-                      color: Colors.grey,
-                    ),
-                    label: Text(
-                      'Confirm Password',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.red,
-                      ),
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  height: 55,
-                  width: 300,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    gradient: const LinearGradient(
-                      colors: [AppColors.red, AppColors.purple],
-                    ),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'SIGN UP',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                const Spacer(),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return AuthScaffold(
+      title: 'Create Your\nAccount',
+      form: [
+        AuthTextField(
+          keyboardType: TextInputType.name,
+          textInputAction: TextInputAction.next,
+          onChanged: (text) {},
+          label: 'Nickname',
+        ),
+        const SizedBox(height: 16),
+        AuthTextField(
+          keyboardType: TextInputType.emailAddress,
+          textInputAction: TextInputAction.next,
+          onChanged: (text) => _login = text,
+          label: 'Gmail',
+        ),
+        const SizedBox(height: 16),
+        AuthTextField(
+          keyboardType: TextInputType.visiblePassword,
+          textInputAction: TextInputAction.next,
+          onChanged: (text) => _password = text,
+          label: 'Password',
+          obscureText: true,
+          suffixIcon: Icons.visibility_off,
+        ),
+        const SizedBox(height: 16),
+        AuthTextField(
+          keyboardType: TextInputType.visiblePassword,
+          textInputAction: TextInputAction.done,
+          onChanged: (text) {},
+          label: 'Confirm Password',
+          obscureText: true,
+          suffixIcon: Icons.visibility_off,
+        ),
+        const Spacer(),
+        GradientButton(
+          onClick: () => _register(context),
+          title: 'SIGN UP',
+        ),
+        const Spacer(),
+      ],
     );
+  }
+
+  Future<void> _register(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _login,
+        password: _password,
+      );
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const HomePage()),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showSnackBar(context, 'Failed to register');
+      }
+    }
   }
 }

@@ -1,147 +1,74 @@
-import 'package:flick_flock/presentation/style/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flick_flock/presentation/pages/auth/widgets/auth_scaffold.dart';
+import 'package:flick_flock/presentation/pages/auth/widgets/auth_text_field.dart';
+import 'package:flick_flock/presentation/pages/home/home_page.dart';
+import 'package:flick_flock/presentation/style/text_styles.dart';
+import 'package:flick_flock/presentation/widgets/gradient_button.dart';
+import 'package:flick_flock/presentation/widgets/snack_bar.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  String _email = '';
+  String _password = '';
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            height: double.infinity,
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.red, AppColors.purple],
-              ),
-            ),
-            child: const Padding(
-              padding: EdgeInsets.only(top: 60.0, left: 22),
-              child: Text(
-                'Hello\nSign in!',
-                style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 200.0),
-            child: Container(
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(40),
-                  topRight: Radius.circular(40),
-                ),
-                color: Colors.white,
-              ),
-              height: double.infinity,
-              width: double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 18.0, right: 18),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const TextField(
-                      decoration: InputDecoration(
-                        suffixIcon: Icon(
-                          Icons.check,
-                          color: Colors.grey,
-                        ),
-                        label: Text(
-                          'Gmail',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xffB81736),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const TextField(
-                      decoration: InputDecoration(
-                        suffixIcon: Icon(
-                          Icons.visibility_off,
-                          color: Colors.grey,
-                        ),
-                        label: Text(
-                          'Password',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xffB81736),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'Forgot Password?',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17,
-                          color: Color(0xff281537),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 70),
-                    Container(
-                      height: 55,
-                      width: 300,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        gradient: const LinearGradient(colors: [
-                          Color(0xffB81736),
-                          Color(0xff281537),
-                        ]),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'SIGN IN',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 150),
-                    const Align(
-                      alignment: Alignment.bottomRight,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            "Don't have an account?",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          Text(
-                            "Sign up",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 17,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return AuthScaffold(
+      title: 'Hello\nSign in!',
+      form: [
+        AuthTextField(
+          keyboardType: TextInputType.emailAddress,
+          textInputAction: TextInputAction.next,
+          onChanged: (text) => _email = text,
+          label: 'Gmail',
+        ),
+        const SizedBox(height: 24),
+        AuthTextField(
+          keyboardType: TextInputType.visiblePassword,
+          textInputAction: TextInputAction.done,
+          onChanged: (text) => _password = text,
+          label: 'Password',
+          obscureText: true,
+          suffixIcon: Icons.visibility_off,
+        ),
+        const SizedBox(height: 20),
+        const Align(
+          alignment: Alignment.centerRight,
+          child: Text('Forgot Password?', style: AppTextStyles.descriptionPurple),
+        ),
+        const Spacer(),
+        GradientButton(
+          onClick: () => _login(context),
+          title: 'SIGN IN',
+        ),
+        const Spacer(),
+      ],
     );
+  }
+
+  Future<void> _login(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _email,
+        password: _password,
+      );
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const HomePage()),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showSnackBar(context, 'Failed to login');
+      }
+    }
   }
 }

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "931808674530",
+    "project_id": "flick-flock-73cb8",
+    "storage_bucket": "flick-flock-73cb8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931808674530:android:484ea3b11045f7f91d14bb",
+        "android_client_info": {
+          "package_name": "ua.lviv.iot.flick_flock"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "931808674530-qln1fq2u05cgcdeeiik6v0te6v8geofv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRcZzBV5FdCGGvR9nIvjPFJxtKL_cZ4Eo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "931808674530-qln1fq2u05cgcdeeiik6v0te6v8geofv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
